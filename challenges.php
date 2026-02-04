@@ -349,6 +349,13 @@ $difficulties = ['easy' => 'Facile', 'medium' => 'Moyen', 'hard' => 'Difficile',
             <div class="stat-label">Points Total</div>
         </div>
     </div>
+
+    <div style="margin-top: 25px;">
+        <a href="submit-flag.php"
+            style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(29, 209, 161, 0.3);">
+            🏁 Soumettre un Flag
+        </a>
+    </div>
 </div>
 
 

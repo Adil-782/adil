@@ -18,6 +18,7 @@ CREATE TABLE users (
                        email VARCHAR(100),
                        role ENUM('user', 'admin', 'moderator') DEFAULT 'user',
                        wallet_balance DECIMAL(10, 2) DEFAULT 0.00,
+                       ctf_points INT DEFAULT 0, -- Points des challenges CTF
                        avatar VARCHAR(255) DEFAULT 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
                        is_public BOOLEAN DEFAULT TRUE -- Cible pour l'IDOR
 );
@@ -99,19 +100,13 @@ CREATE TABLE game_keys (
                            FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE
 );
 
-INSERT INTO users (username, password, email, role, wallet_balance, is_public, avatar) VALUES
-('admin', MD5('admin123'), 'admin@chtim.local', 'admin', 999999.99, 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin');
-
--- Vérification de la création
-SELECT id, username, email, role, wallet_balance FROM users WHERE role = 'admin';
-
 -- ========================================================
 -- INSERTION DES DONNÉES (FIXTURES)
 -- ========================================================
 
 -- 1. Utilisateurs (Avec Avatars fixés)
 INSERT INTO users (username, password, email, role, wallet_balance, is_public, avatar) VALUES
-                                                                                           ('GabeN', MD5('admin_super_secure'), 'gaben@chtim.corp', 'admin', 999999.99, 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=Gabe'),
+                                                                                           ('admin', MD5('admin123'), 'gaben@chtim.corp', 'admin', 999999.99, 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=Gabe'),
                                                                                            ('DarkSasuke', MD5('password123'), 'sasuke@konoha.fr', 'user', 15.50, 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sasuke'),
                                                                                            ('NoobSaibot', MD5('toasty'), 'noob@mk.net', 'user', 0.00, 0, 'https://api.dicebear.com/7.x/avataaars/svg?seed=Noob'),
                                                                                            ('HackerMan', MD5('mrrobot'), 'elliot@fsociety.dat', 'user', 50.00, 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=Hacker');

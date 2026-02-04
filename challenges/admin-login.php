@@ -16,17 +16,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Pas de rate limiting, pas de captcha, pas de blocage = VULNÉRABLE
     if ($username === $validUsername && $password === $validPassword) {
-        $_SESSION['adil_logged'] = true;
         $loggedIn = true;
     } else {
         $message = "Identifiants incorrects.";
         $messageType = "error";
     }
-}
-
-// Vérifier si déjà connecté
-if (isset($_SESSION['adil_logged']) && $_SESSION['adil_logged'] === true) {
-    $loggedIn = true;
 }
 ?>
 <!DOCTYPE html>
@@ -306,6 +300,10 @@ if (isset($_SESSION['adil_logged']) && $_SESSION['adil_logged'] === true) {
 
                 <div class="security-notice">
                     <p>⚠️ Accès réservé aux employés Valve autorisés</p>
+                    <a href="../challenges.php"
+                        style="display: inline-block; margin-top: 10px; color: #66c0f4; text-decoration: none; font-size: 12px; transition: color 0.3s;">
+                        ← Retour aux challenges
+                    </a>
                 </div>
             <?php else: ?>
                 <!-- Dashboard après connexion réussie -->
@@ -323,17 +321,11 @@ if (isset($_SESSION['adil_logged']) && $_SESSION['adil_logged'] === true) {
                         <div class="flag">STEAM{B1GN_L0G1N_SUCC3SS}</div>
                     </div>
 
-                    <a href="?logout=true" class="back-link" onclick="<?php session_destroy(); ?>">← Déconnexion</a>
+                    <a href="../challenges.php" class="back-link">← Retour aux challenges</a>
                 </div>
             <?php endif; ?>
         </div>
     </div>
-
-    <?php if (isset($_GET['logout'])):
-        session_destroy();
-        header("Location: admin-login.php");
-        exit();
-    endif; ?>
 </body>
 
 </html>

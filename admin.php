@@ -56,6 +56,14 @@ if (isset($_POST['add_balance'])) {
     $messageType = "success";
 }
 
+// Réinitialiser les points CTF d'un utilisateur
+if (isset($_POST['reset_user_ctf'])) {
+    $uid = intval($_POST['user_id']);
+    mysqli_query($conn, "UPDATE users SET ctf_points = 0 WHERE id = $uid");
+    $message = "Points CTF réinitialisés avec succès.";
+    $messageType = "success";
+}
+
 // Ajouter un jeu
 if (isset($_POST['add_game'])) {
     $title = mysqli_real_escape_string($conn, $_POST['title']);
@@ -64,6 +72,14 @@ if (isset($_POST['add_game'])) {
     $image = mysqli_real_escape_string($conn, $_POST['image_cover']);
     mysqli_query($conn, "INSERT INTO games (title, description, price, image_cover) VALUES ('$title', '$desc', $price, '$image')");
     $message = "Jeu ajouté avec succès.";
+    $messageType = "success";
+}
+
+// Réinitialiser les points CTF
+if (isset($_POST['reset_ctf_points'])) {
+    unset($_SESSION['completed_flags']);
+    $_SESSION['completed_flags'] = [];
+    $message = "Points CTF réinitialisés avec succès.";
     $messageType = "success";
 }
 
@@ -638,6 +654,72 @@ $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'dashboard';
                     </tbody>
                 </table>
 
+                <!-- CTF Challenges Management -->
+                <div class="section-title" style="margin-top: 40px;">
+                    <h3>🚩 Gestion des Challenges CTF</h3>
+                </div>
+
+                <div class="admin-form">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h4 style="margin: 0; color: var(--text-primary);">Points CTF Actuels</h4>
+                            <p style="margin: 5px 0 0; color: var(--text-muted); font-size: 13px;">
+                                Gérer les points des challenges de sécurité
+                            </p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div
+                                style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #1dd1a1 0%, #48dbfb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                <?php
+                                // Calculer les points totaux depuis la base de données
+                                $totalCTFPoints = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(ctf_points) as total FROM users"))['total'] ?? 0;
+                                $ctfUsersCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as count FROM users WHERE ctf_points > 0"))['count'] ?? 0;
+                                echo intval($totalCTFPoints);
+                                ?> pts
+                            </div>
+                            <div
+                                style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+                                <?php echo $ctfUsersCount; ?> utilisateurs avec des points
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php
+                    $ctfUsers = mysqli_query($conn, "SELECT id, username, ctf_points FROM users WHERE ctf_points > 0 ORDER BY ctf_points DESC LIMIT 10");
+                    if (mysqli_num_rows($ctfUsers) > 0):
+                        ?>
+                        <div style="background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;">
+                                🏆 TOP UTILISATEURS CTF</div>
+                            <?php while ($ctfUser = mysqli_fetch_assoc($ctfUsers)): ?>
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                                    <div style="color: #1dd1a1; font-size: 13px;">
+                                        ✓ <?php echo htmlspecialchars($ctfUser['username']); ?>
+                                    </div>
+                                    <div style="color: var(--text-muted); font-size: 12px;">
+                                        <?php echo $ctfUser['ctf_points']; ?> pts
+                                    </div>
+                                </div>
+                            <?php endwhile; ?>
+                        </div>
+
+                        <div
+                            style="text-align: center; margin-top: 15px; padding: 15px; background: rgba(29, 209, 161, 0.1); border-radius: 8px; border: 1px solid rgba(29, 209, 161, 0.2);">
+                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">💡 Astuce</div>
+                            <p style="margin: 0; font-size: 13px; color: var(--text-secondary);">
+                                Utilisez le bouton <strong style="color: #1dd1a1;">🚩</strong> dans la gestion des
+                                utilisateurs pour réinitialiser les points CTF individuellement.
+                            </p>
+                        </div>
+                    <?php else: ?>
+                        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                            <div style="font-size: 48px; opacity: 0.3; margin-bottom: 10px;">🏆</div>
+                            <p>Aucun challenge complété pour le moment</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
             <?php elseif ($activeTab === 'users'): ?>
                 <table class="admin-table">
                     <thead>
@@ -647,6 +729,7 @@ $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'dashboard';
                             <th>Email</th>
                             <th>Rôle</th>
                             <th>Solde</th>
+                            <th>🚩 Points CTF</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -672,11 +755,20 @@ $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'dashboard';
                                     <?php echo $u['wallet_balance']; ?> €
                                 </td>
                                 <td>
+                                    <span
+                                        style="font-weight: 700; background: linear-gradient(135deg, #1dd1a1 0%, #48dbfb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                        <?php echo intval($u['ctf_points']); ?> pts
+                                    </span>
+                                </td>
+                                <td>
                                     <div class="action-btns">
                                         <button class="btn-sm btn-edit"
                                             onclick="openRoleModal(<?php echo $u['id']; ?>, '<?php echo $u['role']; ?>')">Rôle</button>
                                         <button class="btn-sm btn-edit"
                                             onclick="openBalanceModal(<?php echo $u['id']; ?>)">💰</button>
+                                        <button class="btn-sm btn-edit"
+                                            style="background: rgba(29, 209, 161, 0.2); color: #1dd1a1;"
+                                            onclick="openCTFModal(<?php echo $u['id']; ?>)">🚩</button>
                                         <?php if ($u['id'] !== $_SESSION['user_id']): ?>
                                             <a href="?tab=users&delete_user=<?php echo $u['id']; ?>" class="btn-sm btn-delete"
                                                 onclick="return confirm('Supprimer cet utilisateur ?')">🗑️</a>
@@ -837,6 +929,29 @@ $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'dashboard';
         </div>
     </div>
 
+    <!-- Modal CTF -->
+    <div class="modal" id="ctfModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚩 Réinitialiser Points CTF</h3>
+                <button class="modal-close" onclick="closeModal('ctfModal')">&times;</button>
+            </div>
+            <form method="POST"
+                onsubmit="return confirm('Voulez-vous vraiment réinitialiser les points CTF de cet utilisateur ?');">
+                <input type="hidden" name="user_id" id="ctfUserId">
+                <div style="padding: 20px; text-align: center; color: var(--text-muted);">
+                    <div style="font-size: 48px; margin-bottom: 10px;">⚠️</div>
+                    <p>Cette action va remettre les points CTF de l'utilisateur à <strong
+                            style="color: var(--text-primary);">0</strong>.</p>
+                    <p style="font-size: 12px; margin-top: 15px;">Les challenges complétés en session resteront visibles
+                        jusqu'à la prochaine déconnexion.</p>
+                </div>
+                <button type="submit" name="reset_user_ctf" class="btn-sm btn-delete"
+                    style="width: 100%; padding: 12px; font-size: 14px;">🔄 Réinitialiser les points</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         function openRoleModal(userId, currentRole) {
             document.getElementById('roleUserId').value = userId;
@@ -847,6 +962,11 @@ $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'dashboard';
         function openBalanceModal(userId) {
             document.getElementById('balanceUserId').value = userId;
             document.getElementById('balanceModal').classList.add('active');
+        }
+
+        function openCTFModal(userId) {
+            document.getElementById('ctfUserId').value = userId;
+            document.getElementById('ctfModal').classList.add('active');
         }
 
         function closeModal(id) {

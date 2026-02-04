@@ -38,6 +38,46 @@ $u = mysqli_fetch_assoc($res);
                     Email: <?php echo htmlspecialchars($u['email']); ?><br>
                     Solde: <span style="color:#a4d007;"><?php echo $u['wallet_balance']; ?> €</span>
                 </div>
+
+                <!-- Compteur de Points CTF -->
+                <div
+                    style="background: linear-gradient(135deg, rgba(29, 209, 161, 0.2) 0%, rgba(72, 219, 251, 0.1) 100%); border: 2px solid rgba(29, 209, 161, 0.4); border-radius: 8px; padding: 15px; margin-top: 15px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div
+                                style="font-size: 11px; color: #8f98a0; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 5px;">
+                                🚩 Points CTF
+                            </div>
+                            <div
+                                style="font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #1dd1a1 0%, #48dbfb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                <?php
+                                // Lire les points depuis la base de données
+                                echo intval($u['ctf_points']);
+                                ?> pts
+                            </div>
+                        </div>
+                        <div style="font-size: 40px;">
+                            🏆
+                        </div>
+                    </div>
+                    <?php if (intval($u['ctf_points']) > 0 && isset($_SESSION['completed_flags']) && count($_SESSION['completed_flags']) > 0): ?>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div style="font-size: 11px; color: #8f98a0; margin-bottom: 5px;">Challenges complétés :</div>
+                            <?php foreach ($_SESSION['completed_flags'] as $flag): ?>
+                                <div style="font-size: 12px; color: #1dd1a1; margin: 3px 0;">
+                                    ✓ <?php echo htmlspecialchars($flag['name']); ?>
+                                    <span style="color: #8f98a0;">(+<?php echo $flag['points']; ?> pts)</span>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div style="margin-top: 10px; font-size: 12px; color: #8f98a0;">
+                            Aucun challenge complété. <a href="challenges.php"
+                                style="color: #48dbfb; text-decoration: underline;">Commencer maintenant</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
                 <div style="margin-top:15px;">
                     <a href="change-password.php"
                         style="display:inline-block; padding:10px 20px; background:linear-gradient(135deg, var(--accent-blue-light), var(--accent-blue-dark)); color:white; text-decoration:none; border-radius:5px; font-weight:600; font-size:13px; transition: var(--transition-normal);">
