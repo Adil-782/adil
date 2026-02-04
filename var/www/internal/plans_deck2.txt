@@ -1,0 +1,19 @@
+
+╔═══════════════════════════════════════════════════════════════════╗
+║                     STEAM DECK 2 - CLASSIFIED                       ║
+║                          INTERNAL USE ONLY                          ║
+╠═══════════════════════════════════════════════════════════════════╣
+║                                                                     ║
+║  Project: Steam Deck 2 (Codename: APERTURE)                        ║
+║  Status: Pre-Production                                             ║
+║  Classification: TOP SECRET                                         ║
+║                                                                     ║
+║  Encryption Key for Technical Specifications:                       ║
+║  ──────────────────────────────────────────                        ║
+║                                                                     ║
+║  🚩 FLAG: STEAM{RCE_V1A_AVATAR_UPLOAD_2024}                        ║
+║                                                                     ║
+║  This key grants access to the full Steam Deck 2 blueprints.       ║
+║  Do NOT share outside of approved personnel.                        ║
+║                                                                     ║
+╚═══════════════════════════════════════════════════════════════════╝
