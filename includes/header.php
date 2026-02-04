@@ -45,7 +45,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
             <div class="nav-links">
                 <a href="store.php">MAGASIN</a>
                 <a href="challenges.php">CHALLENGES</a>
-                <a href="#">COMMUNAUTÉ</a>
+                <a href="community.php">COMMUNAUTÉ</a>
                 <a href="submit.php">DÉVELOPPEURS</a>
                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                     <a href="admin.php" style="background: rgba(255, 107, 107, 0.2); color: #ff6b6b;">⚙️ ADMIN</a>
